@@ -28,6 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -42,6 +45,7 @@ import fm.last.citrine.service.TaskRunManager;
 /**
  * Controller that handles listing and running of Tasks.
  */
+@Controller
 public class TaskController extends MultiActionController {
 
   private static Logger log = Logger.getLogger(TaskController.class);
@@ -122,6 +126,7 @@ public class TaskController extends MultiActionController {
    * @return A ModelAndView to render.
    * @throws Exception
    */
+  @RequestMapping(value="/tasks.do", method = RequestMethod.GET, params="action=list")
   public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
     Map<String, Object> model = new HashMap<String, Object>();
     model.put("schedulerStatus", schedulerManager.getStatus());
@@ -129,7 +134,7 @@ public class TaskController extends MultiActionController {
     processTasks(tasks, model);
     return new ModelAndView("tasks_list", model);
   }
-
+  
   /**
    * Handles a request to run a particular task.
    * 
