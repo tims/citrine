@@ -25,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -36,11 +39,14 @@ import fm.last.commons.io.LastFileUtils;
 /**
  * Controller for the admin page.
  */
+@Controller
 public class AdminController extends MultiActionController {
 
   private static Logger log = Logger.getLogger(AdminController.class);
 
+  @Autowired
   private TaskManager taskManager;
+  @Autowired
   private SchedulerManager schedulerManager;
 
   private String buildVersion;
@@ -59,6 +65,7 @@ public class AdminController extends MultiActionController {
     }
   }
 
+  @RequestMapping("admin.do")
   public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
     Map<String, Object> model = new HashMap<String, Object>();
     model.put("buildVersion", buildVersion);
@@ -68,23 +75,10 @@ public class AdminController extends MultiActionController {
     return new ModelAndView("admin", model);
   }
 
+  @RequestMapping(value = "admin.do", params = "action=prepareForShutdown")
   public ModelAndView prepareForShutdown(HttpServletRequest request, HttpServletResponse response) throws Exception {
     schedulerManager.prepareForShutdown();
-    return new ModelAndView(new RedirectView("admin.do")); 
-  }
-
-  /**
-   * @param taskManager the taskManager to set
-   */
-  public void setTaskManager(TaskManager taskManager) {
-    this.taskManager = taskManager;
-  }
-
-  /**
-   * @param schedulerManager the schedulerManager to set
-   */
-  public void setSchedulerManager(SchedulerManager schedulerManager) {
-    this.schedulerManager = schedulerManager;
+    return new ModelAndView(new RedirectView("admin.do"));
   }
 
 }

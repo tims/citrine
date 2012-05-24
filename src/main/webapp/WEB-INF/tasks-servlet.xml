@@ -4,7 +4,7 @@
   xsi:schemaLocation="
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    
+
   <context:component-scan base-package="fm.last.citrine.web" />
   <context:annotation-config />
 
@@ -101,26 +101,15 @@ we will convert this to annotations
     <property name="methodNameResolver" ref="methodNameResolver" />
   </bean>
 
-  <bean id="taskController" class="fm.last.citrine.web.TaskController">
-    <property name="taskManager" ref="taskManager" />
-    <property name="taskRunManager" ref="taskRunManager" />
-    <property name="schedulerManager" ref="schedulerManager" />
-    <property name="methodNameResolver" ref="methodNameResolver" />
-  </bean>
-
+  <bean id="taskController" class="fm.last.citrine.web.TaskController" />
   <bean id="taskFormController" class="fm.last.citrine.web.TaskFormController">
     <property name="taskManager" ref="taskManager" />
     <property name="commandName" value="taskDTO" />
     <property name="commandClass" value="fm.last.citrine.web.TaskDTO" />
     <property name="validator" ref="taskDTOValidator" />
   </bean>
-
+  
   <bean id="taskRunController" class="fm.last.citrine.web.TaskRunController">
-    <property name="logFileManager" ref="logFileManager" />
-    <property name="taskManager" ref="taskManager" />
-    <property name="taskRunManager" ref="taskRunManager" />
-    <property name="methodNameResolver" ref="methodNameResolver" />
     <property name="pageSize" value="20" />
   </bean>
-
 </beans>

@@ -15,7 +15,7 @@
  */
 package fm.last.citrine.web;
 
-import static fm.last.citrine.web.Constants.PARAM_TASK_ID;
+import static fm.last.citrine.web.Constants.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +28,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import fm.last.citrine.model.Status;
@@ -46,13 +45,15 @@ import fm.last.citrine.service.TaskRunManager;
  * Controller that handles listing and running of Tasks.
  */
 @Controller
-public class TaskController extends MultiActionController {
+public class TaskController {
 
   private static Logger log = Logger.getLogger(TaskController.class);
 
+  @Autowired
   private TaskManager taskManager;
+  @Autowired
   private TaskRunManager taskRunManager;
-
+  @Autowired
   private SchedulerManager schedulerManager;
 
   /**
@@ -120,13 +121,8 @@ public class TaskController extends MultiActionController {
 
   /**
    * Lists tasks.
-   * 
-   * @param request
-   * @param response
-   * @return A ModelAndView to render.
-   * @throws Exception
    */
-  @RequestMapping(value="/tasks.do", method = RequestMethod.GET, params="action=list")
+  @RequestMapping("/tasks.do")
   public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
     Map<String, Object> model = new HashMap<String, Object>();
     model.put("schedulerStatus", schedulerManager.getStatus());
@@ -134,15 +130,11 @@ public class TaskController extends MultiActionController {
     processTasks(tasks, model);
     return new ModelAndView("tasks_list", model);
   }
-  
+
   /**
    * Handles a request to run a particular task.
-   * 
-   * @param request
-   * @param response
-   * @return A ModelAndView to render.
-   * @throws Exception
    */
+  @RequestMapping(value = "/tasks.do", params = "action=run")
   public ModelAndView run(HttpServletRequest request, HttpServletResponse response) throws Exception {
     long taskId = RequestUtils.getLongValue(request, PARAM_TASK_ID);
     log.debug("Received request to run task " + taskId);
@@ -156,12 +148,8 @@ public class TaskController extends MultiActionController {
 
   /**
    * Handles a request to reset a particular task.
-   * 
-   * @param request
-   * @param response
-   * @return A ModelAndView to render.
-   * @throws Exception
    */
+  @RequestMapping(value = "/tasks.do", params = "action=reset")
   public ModelAndView reset(HttpServletRequest request, HttpServletResponse response) throws Exception {
     long taskId = RequestUtils.getLongValue(request, PARAM_TASK_ID);
     log.debug("Received request to reset task " + taskId);
@@ -169,30 +157,6 @@ public class TaskController extends MultiActionController {
     schedulerManager.resetTask(task);
     return new ModelAndView(new RedirectView("tasks.do?" + Constants.PARAM_SELECTED_GROUP_NAME + "="
         + request.getParameter(Constants.PARAM_SELECTED_GROUP_NAME)));
-  }
-
-  public TaskManager getTaskManager() {
-    return taskManager;
-  }
-
-  public void setTaskManager(TaskManager taskManager) {
-    this.taskManager = taskManager;
-  }
-
-  public SchedulerManager getSchedulerManager() {
-    return schedulerManager;
-  }
-
-  public void setSchedulerManager(SchedulerManager schedulerManager) {
-    this.schedulerManager = schedulerManager;
-  }
-
-  public TaskRunManager getTaskRunManager() {
-    return taskRunManager;
-  }
-
-  public void setTaskRunManager(TaskRunManager jobRunManager) {
-    this.taskRunManager = jobRunManager;
   }
 
 }

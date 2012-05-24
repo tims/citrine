@@ -15,11 +15,9 @@
  */
 package fm.last.citrine.web;
 
-import static fm.last.citrine.web.Constants.PARAM_CANCEL;
-import static fm.last.citrine.web.Constants.PARAM_DELETE;
+import static fm.last.citrine.web.Constants.*;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +28,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.Job;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import fm.last.citrine.model.Task;
@@ -42,10 +50,14 @@ import fm.last.citrine.service.TaskManager;
 /**
  * Controller implementation for handling the form used for creating and editing Tasks.
  */
-public class TaskFormController extends SimpleFormController {
+@Controller
+public class TaskFormController implements ApplicationContextAware {
 
   private static Logger log = Logger.getLogger(TaskFormController.class);
 
+  private ApplicationContext applicationContext;
+
+  @Autowired
   private TaskManager taskManager;
 
   private static final String PARAM_ID = "id";
@@ -57,12 +69,6 @@ public class TaskFormController extends SimpleFormController {
    */
   private String defaultBeanName = DEFAULT_BEAN_NAME;
 
-  private List<String> getJobBeanNames() {
-    String[] beanNames = getWebApplicationContext().getParent().getBeanNamesForType(Job.class);
-    List<String> jobBeanNames = Arrays.asList(beanNames);
-    return jobBeanNames;
-  }
-
   private String getSuccessView(String selectedGroupName) {
     if (StringUtils.isEmpty(selectedGroupName)) {
       selectedGroupName = Constants.GROUP_NAME_ALL;
@@ -71,11 +77,7 @@ public class TaskFormController extends SimpleFormController {
   }
 
   @Override
-  protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors)
-    throws Exception {
-    Map<String, Object> referenceData = new HashMap<String, Object>();
-    referenceData.put("jobBeans", getJobBeanNames());
-
+  protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
     String idString = request.getParameter(PARAM_ID);
     if (idString != null) { // only allow parent/child relationships to be created if Task is being edited, not created
       List<Task> groupTasks = taskManager.findTasksInSameGroup(((TaskDTO) command).getTask());
@@ -84,6 +86,22 @@ public class TaskFormController extends SimpleFormController {
 
     referenceData.put(Constants.PARAM_SELECTED_GROUP_NAME, request.getParameter(Constants.PARAM_SELECTED_GROUP_NAME));
     return referenceData;
+  }
+
+  @ModelAttribute("jobBeans")
+  public List<String> populateJobBeanNames() {
+    String[] beanNames = applicationContext.getBeanNamesForType(Job.class);
+    List<String> jobBeanNames = Arrays.asList(beanNames);
+    return jobBeanNames;
+  }
+
+  @ModelAttribute("groupTasks")
+  public List<Task> populateGroupTasks() {
+    // TODO: cheating and returning all tasks for now
+    // we really just want to get tasks in the same group, like so
+    // List<Task> groupTasks = taskManager.findTasksInSameGroup(((TaskDTO) command).getTask());
+
+    return taskManager.getTasks();
   }
 
   @Override
@@ -104,19 +122,36 @@ public class TaskFormController extends SimpleFormController {
     return backingObject;
   }
 
-  @Override
-  public ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,
-      BindException errors) throws Exception {
+  public ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
+    throws Exception {
     if (request.getParameter(PARAM_CANCEL) != null) {
       TaskDTO taskDTO = (TaskDTO) command;
-      return new ModelAndView(new RedirectView(getSuccessView(taskDTO.getSelectedGroupName())));
+      return new ModelAndView(new RedirectView(getSuccessView(taskDTO.getSelectdGroupName())));
     }
     return super.processFormSubmission(request, response, command, errors);
   }
 
+  @RequestMapping(method = RequestMethod.POST)
+  public ModelAndView processSubmit(@ModelAttribute(Constants.PARAM_SELECTED_GROUP_NAME) String selectedGroupName,
+      @ModelAttribute("command") TaskDTO taskDTO, BindingResult result, SessionStatus status) {
+    Task newTask = taskDTO.getTask();
+    Task oldTask = taskManager.get(taskDTO.getTask().getId());
+
+    if (oldTask != null) {
+      newTask.setChildTasks(oldTask.getChildTasks());
+    }
+    taskManager.save(newTask);
+
+    // clear the command object from the session
+    status.setComplete();
+
+    // return form success view
+    return new ModelAndView(new RedirectView(getSuccessView(taskDTO.getSelectedGroupName())));
+  }
+
+  /*
   @Override
-  public ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-      BindException errors) {
+  public ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) {
     TaskDTO taskDTO = (TaskDTO) command;
     Task oldTask = taskManager.get(taskDTO.getTask().getId());
     if (request.getParameter(PARAM_DELETE) != null) {
@@ -131,14 +166,7 @@ public class TaskFormController extends SimpleFormController {
     }
     return new ModelAndView(new RedirectView(getSuccessView(taskDTO.getSelectedGroupName())));
   }
-
-  public TaskManager getTaskManager() {
-    return taskManager;
-  }
-
-  public void setTaskManager(TaskManager taskManager) {
-    this.taskManager = taskManager;
-  }
+   */
 
   /**
    * @return the defaultBeanName
@@ -154,4 +182,8 @@ public class TaskFormController extends SimpleFormController {
     this.defaultBeanName = defaultBeanName;
   }
 
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
+  }
 }
