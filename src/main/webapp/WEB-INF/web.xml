@@ -23,6 +23,11 @@
     <url-pattern>*.do</url-pattern>
   </servlet-mapping>
   
+  <servlet-mapping>
+    <servlet-name>tasks</servlet-name>
+    <url-pattern>*.json</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>   
     <servlet-name>default</servlet-name>
     <url-pattern>/logs/*</url-pattern>
