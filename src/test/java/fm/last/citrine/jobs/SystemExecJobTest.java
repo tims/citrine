@@ -15,9 +15,7 @@
  */
 package fm.last.citrine.jobs;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import fm.last.citrine.jobs.syscommand.RollingFileExecutorObserver;
-import fm.last.commons.test.LastTestCase;
 import fm.last.commons.test.file.ClassDataFolder;
 import fm.last.commons.test.file.TemporaryFolder;
 import fm.last.syscommand.SysCommandExecutor;
