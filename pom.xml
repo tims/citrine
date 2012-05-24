@@ -94,24 +94,10 @@
       <artifactId>commons-pool</artifactId>
       <version>1.6</version>
     </dependency>
-    
-    <!-- may need one of these?
     <dependency>
-      <groupId>org.apache.jakarta.taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jakarta.taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <version>1.1.2</version>
-    </dependency>
-     -->
-
-    <dependency>
-    	<groupId>displaytag</groupId>
-    	<artifactId>displaytag</artifactId>
-    	<version>1.2</version>
+      <groupId>displaytag</groupId>
+      <artifactId>displaytag</artifactId>
+      <version>1.2</version>
     </dependency>
 
     <dependency>
@@ -168,28 +154,28 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>3.0.5.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>3.0.5.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>3.0.5.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>3.0.5.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-      <version>3.0.5.RELEASE</version>
+      <version>3.1.1.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
