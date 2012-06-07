@@ -109,9 +109,9 @@
      -->
 
     <dependency>
-      <groupId>displaytag</groupId>
-      <artifactId>displaytag</artifactId>
-      <version>1.2</version>
+    	<groupId>displaytag</groupId>
+    	<artifactId>displaytag</artifactId>
+    	<version>1.2</version>
     </dependency>
 
     <dependency>
@@ -207,11 +207,6 @@
       <version>4.10</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.7</version>
-    </dependency>
   </dependencies>
 
   <build>
@@ -234,7 +229,7 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <version>6.1.15</version>
         <configuration>
-          <contextPath>/citrine</contextPath>
+          <contextPath>/</contextPath>
           <scanIntervalSeconds>2</scanIntervalSeconds>
         </configuration>
       </plugin>
