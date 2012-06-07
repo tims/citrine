@@ -103,7 +103,7 @@ public class LastFileUtilsTest {
 
   @Test
   public void testGetFile_OnPath() throws FileNotFoundException {
-    File buildXML = LastFileUtils.getFile("pom.xml", this.getClass());
+    File buildXML = LastFileUtils.getFile("build.xml", this.getClass());
     assertTrue(buildXML.exists());
   }
 
